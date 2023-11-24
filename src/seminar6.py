@@ -156,8 +156,8 @@ def upload():
 
     client.upload_file(zip_model_path, BUCKET_NAME, f'{YOUR_GIT_USER}/model_6.zip')
 
-config = dotenv.dotenv_values('.env')
-print(config["ACCESS_KEY"])
+config = dotenv.dotenv_values('scr/.env')
+print(config)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='src/seminar6.py',
