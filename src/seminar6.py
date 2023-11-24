@@ -117,7 +117,7 @@ def train():
 
     print('Training model')
 
-    epochs = 10
+    epochs = 1
 
     callbacks = [
         keras.callbacks.ModelCheckpoint("save_at_{epoch}.keras"),
@@ -155,8 +155,6 @@ def upload():
     )
 
     client.upload_file(zip_model_path, BUCKET_NAME, f'{YOUR_GIT_USER}/model_6.zip')
-
-train()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
