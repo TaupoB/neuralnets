@@ -18,7 +18,7 @@ PATH_TO_DATA = 'data/raw/cats_dogs_train'
 PATH_TO_MODEL = 'models/model_6'
 BUCKET_NAME = 'neuralnets2023'
 # todo fix your git user name and copy .env to project root
-YOUR_GIT_USER = 'labintsev'
+YOUR_GIT_USER = 'TaupoB'
 
 
 def download_data():
