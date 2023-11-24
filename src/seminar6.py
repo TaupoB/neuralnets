@@ -80,7 +80,7 @@ def make_model(input_shape, num_classes):
 def train():
     """Pipeline: Build, train and save model to models/model_6"""
     image_size = (180, 180)
-    batch_size = 128
+    batch_size = 100
 
     train_ds, val_ds = tf.keras.utils.image_dataset_from_directory(
         PATH_TO_DATA+'/PetImages',
@@ -117,7 +117,7 @@ def train():
 
     print('Training model')
 
-    epochs = 1
+    epochs = 10
 
     callbacks = [
         keras.callbacks.ModelCheckpoint("save_at_{epoch}.keras"),
