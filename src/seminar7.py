@@ -45,7 +45,8 @@ def make_model():
     x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, activation='tanh', return_sequences=True))(x)
     x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
     x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
     x = tf.keras.layers.Dense(1, name='out_layer')(x)
     x = tf.keras.layers.Activation('sigmoid')(x)
     recurrent_model = tf.keras.Model(inputs=inputs, outputs=x)
@@ -100,7 +101,7 @@ def upload():
     shutil.make_archive(base_name=PATH_TO_MODEL,
                         format='zip',
                         root_dir=PATH_TO_MODEL)
-    config = dotenv.dotenv_values('../.env')
+    config = dotenv.dotenv_values('.env')
     ACCESS_KEY = config['ACCESS_KEY']
     SECRET_KEY = config['SECRET_KEY']
 
