@@ -21,8 +21,8 @@ PATH_TO_TRAIN_DATA = 'data/raw/spam.csv'
 PATH_TO_TEST_DATA = 'data/raw/spam_test.csv'
 PATH_TO_MODEL = 'models/model_7'
 BUCKET_NAME = 'neuralnets2023'
-# todo fix your git user name
-YOUR_GIT_USER = 'labintsev'
+
+YOUR_GIT_USER = 'TaupoB'
 
 
 def download_data():
@@ -38,12 +38,15 @@ def download_data():
 def make_model():
     """
     Make recurrent model for binary classification.
-    todo find good layers and hyperparameters
     :return:
     """
     inputs = tf.keras.layers.Input(name='inputs', shape=[MAX_SEQ_LEN])
     x = tf.keras.layers.Embedding(MAX_WORDS, output_dim=4, input_length=MAX_SEQ_LEN)(inputs)
-    x = tf.keras.layers.SimpleRNN(units=4)(x)
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, activation='tanh', return_sequences=True))(x)
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64))(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
     x = tf.keras.layers.Dense(1, name='out_layer')(x)
     x = tf.keras.layers.Activation('sigmoid')(x)
     recurrent_model = tf.keras.Model(inputs=inputs, outputs=x)
@@ -61,13 +64,16 @@ def train():
     X_train, Y_train = load_data()
     tok = tf.keras.preprocessing.text.Tokenizer(num_words=MAX_WORDS)
     tok.fit_on_texts(X_train)
+    tok_string = tok.to_json()
+    with open("tok.json", "w") as f:
+        f.write(tok_string)
     sequences = tok.texts_to_sequences(X_train)
     sequences_matrix = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=MAX_SEQ_LEN)
 
     model = make_model()
     model.summary()
     model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy', tf.keras.metrics.Precision()])
-    model.fit(sequences_matrix, Y_train, batch_size=128, epochs=10, validation_split=0.2)
+    model.fit(sequences_matrix, Y_train, batch_size=128, epochs=1, validation_split=0.2)
     model.save('models/model_7')
 
 
@@ -80,8 +86,9 @@ def validate(model_path='models/model_7') -> tuple:
     model = tf.keras.models.load_model(model_path)
     X_test, Y_test = load_data('data/raw/spam_test.csv')
 
-    tok = tf.keras.preprocessing.text.Tokenizer(num_words=MAX_WORDS)
-    tok.fit_on_texts(X_test)
+    with open('tok.json', 'r') as f:
+        json_string = f.read()
+    tok = tf.keras.preprocessing.text.tokenizer_from_json(json_string)
     test_sequences = tok.texts_to_sequences(X_test)
     test_sequences_matrix = tf.keras.preprocessing.sequence.pad_sequences(test_sequences, maxlen=MAX_SEQ_LEN)
 
@@ -98,7 +105,7 @@ def upload():
     shutil.make_archive(base_name=PATH_TO_MODEL,
                         format='zip',
                         root_dir=PATH_TO_MODEL)
-    config = dotenv.dotenv_values('../.env')
+    config = dotenv.dotenv_values('.env')
     ACCESS_KEY = config['ACCESS_KEY']
     SECRET_KEY = config['SECRET_KEY']
 
